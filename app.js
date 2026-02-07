@@ -141,21 +141,10 @@ qInput.addEventListener("blur", () => {
 });
 
 goGoogle.addEventListener("click", () => go("google"));
-
-// YouTube: simplemente cierra el navegador
-goYouTube.addEventListener("click", (e) => {
-  e.preventDefault();
-  e.stopPropagation();
-  
-  // Intenta cerrar la ventana
-  const closed = window.close();
-  
-  // Si no se puede cerrar, intenta cerrar la pestaña o ir atrás
-  if(!closed){
-    setTimeout(() => {
-      window.history.back();
-    }, 100);
-  }
+goYouTube.addEventListener("click", () => {
+  window.close();
+  // Si no se puede cerrar (navegador bloquea), intenta ir atrás
+  setTimeout(() => { window.history.back(); }, 100);
 });
 
 qInput.addEventListener("keydown", (e) => {
