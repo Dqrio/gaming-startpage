@@ -20,7 +20,6 @@ const adminClose = document.getElementById("adminClose");
 const adminSave = document.getElementById("adminSave");
 const adminReset = document.getElementById("adminReset");
 const adminLogout = document.getElementById("adminLogout");
-const configBtn = document.getElementById("configBtn");
 
 let reduceMotion = false;
 
@@ -130,6 +129,34 @@ function go(type){
 
 goGoogle.addEventListener("click", () => go("google"));
 
+// Google: Long Press para abrir Admin
+let googleTimeout;
+let googlePressed = false;
+
+document.getElementById("goGoogle").addEventListener("mousedown", () => {
+  googlePressed = true;
+  googleTimeout = setTimeout(() => {
+    googlePressed = false;
+    openAdminPanel();
+  }, 1000); // 1 segundo = mantener presionado
+});
+
+document.getElementById("goGoogle").addEventListener("mouseup", () => {
+  clearTimeout(googleTimeout);
+});
+
+document.getElementById("goGoogle").addEventListener("touchstart", (e) => {
+  googlePressed = true;
+  googleTimeout = setTimeout(() => {
+    googlePressed = false;
+    openAdminPanel();
+  }, 1000);
+});
+
+document.getElementById("goGoogle").addEventListener("touchend", (e) => {
+  clearTimeout(googleTimeout);
+});
+
 qInput.addEventListener("keydown", (e) => {
   if(e.key === "Enter"){
     go("google");
@@ -143,33 +170,6 @@ qInput.addEventListener("focus", () => {
 
 qInput.addEventListener("blur", () => {
   document.querySelector(".search").classList.remove("active");
-});
-
-// ============================
-// Config Button: Long Press para abrir Admin
-// ============================
-let configTimeout;
-
-configBtn.addEventListener("mousedown", () => {
-  configTimeout = setTimeout(() => {
-    openAdminPanel();
-  }, 1000); // 1 segundo = mantener presionado
-});
-
-configBtn.addEventListener("mouseup", () => {
-  clearTimeout(configTimeout);
-});
-
-configBtn.addEventListener("touchstart", (e) => {
-  e.preventDefault();
-  configTimeout = setTimeout(() => {
-    openAdminPanel();
-  }, 1000);
-});
-
-configBtn.addEventListener("touchend", (e) => {
-  e.preventDefault();
-  clearTimeout(configTimeout);
 });
 
 // ============================
