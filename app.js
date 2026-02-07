@@ -21,14 +21,15 @@ const adminSubmit = document.getElementById("adminSubmit");
 const adminClose = document.getElementById("adminClose");
 const adminSave = document.getElementById("adminSave");
 const adminLogout = document.getElementById("adminLogout");
+const configBtn = document.getElementById("configBtn");
 
 let reduceMotion = false;
 
 // ============================
-// ADMIN CREDENTIALS (CAMBIAR AQUÍ)
+// ADMIN CREDENTIALS
 // ============================
-const ADMIN_USER = "admin";
-const ADMIN_PASS = "gaming123";
+const ADMIN_USER = "admi";
+const ADMIN_PASS = "admi";
 
 // ============================
 // 1) Clock
@@ -113,7 +114,7 @@ motionBtn.addEventListener("click", () => {
 
 
 // ============================
-// 5) Search & Suggestions
+// 5) Search & Admin
 // ============================
 function cleanQuery(q){
   return encodeURIComponent(q.trim());
@@ -127,47 +128,52 @@ function go(type){
     window.location.href = `https://www.google.com/search?q=${cleanQuery(q)}`;
   }else if(type === "youtube"){
     window.location.href = `https://www.youtube.com/results?search_query=${cleanQuery(q)}`;
-  }else if(type === "gaming"){
-    window.location.href = `https://www.google.com/search?q=gaming+${cleanQuery(q)}`;
-  }else if(type === "twitch"){
-    window.location.href = `https://www.twitch.tv/search?term=${cleanQuery(q)}`;
   }
 }
 
-// Panel de sugerencias
+// Animación de subida del buscador al enfocar
 qInput.addEventListener("focus", () => {
-  searchSuggestions.classList.add("active");
+  document.querySelector(".search").classList.add("active");
 });
 
-document.querySelectorAll(".suggestion-item").forEach(item => {
-  item.addEventListener("click", () => {
-    const type = item.dataset.type;
-    if(type === "close"){
-      searchSuggestions.classList.remove("active");
-      qInput.blur();
-    }else{
-      go(type);
-    }
-  });
+qInput.addEventListener("blur", () => {
+  document.querySelector(".search").classList.remove("active");
 });
 
 goGoogle.addEventListener("click", () => go("google"));
 
-// YouTube: toque corto = cerrar, toque largo = admin
+// YouTube: toque corto = cierra navegador, toque largo = admin
 let youtubeTimeout;
-goYouTube.addEventListener("touchstart", () => {
+let youtubePressed = false;
+
+goYouTube.addEventListener("mousedown", () => {
+  youtubePressed = true;
   youtubeTimeout = setTimeout(() => {
+    youtubePressed = false;
     openAdminPanel();
   }, 1000); // 1 segundo = toque largo
 });
 
-goYouTube.addEventListener("touchend", () => {
+goYouTube.addEventListener("mouseup", () => {
   clearTimeout(youtubeTimeout);
-  closeSearch();
+  if(youtubePressed){
+    youtubePressed = false;
+    closeSearch();
+  }
 });
 
-goYouTube.addEventListener("click", (e) => {
-  if(!e.defaultPrevented){
+goYouTube.addEventListener("touchstart", () => {
+  youtubePressed = true;
+  youtubeTimeout = setTimeout(() => {
+    youtubePressed = false;
+    openAdminPanel();
+  }, 1000);
+});
+
+goYouTube.addEventListener("touchend", () => {
+  clearTimeout(youtubeTimeout);
+  if(youtubePressed){
+    youtubePressed = false;
     closeSearch();
   }
 });
@@ -175,14 +181,18 @@ goYouTube.addEventListener("click", (e) => {
 qInput.addEventListener("keydown", (e) => {
   if(e.key === "Enter"){
     go("google");
-    searchSuggestions.classList.remove("active");
   }
 });
 
 function closeSearch(){
-  window.close();
-  setTimeout(() => { window.history.back(); }, 100);
+  if(window.close()){
+    return true;
+  }
+  window.history.back();
 }
+
+// Botón config oculto
+configBtn.addEventListener("click", openAdminPanel);
 
 // ============================
 // Admin Panel Logic
@@ -192,6 +202,8 @@ function openAdminPanel(){
   adminPanel.classList.add("active");
   adminLogin.style.display = "block";
   adminDashboard.style.display = "none";
+  adminUser.value = "";
+  adminPass.value = "";
   adminUser.focus();
 }
 
@@ -213,31 +225,44 @@ adminSubmit.addEventListener("click", () => {
     adminDashboard.style.display = "block";
     loadAdminSettings();
   }else{
-    alert("Credenciales incorrectas");
+    alert("❌ Credenciales incorrectas\nIntenta: admi / admi");
     adminPass.value = "";
+    adminPass.focus();
   }
 });
 
 adminClose.addEventListener("click", closeAdminPanel);
 adminLogout.addEventListener("click", closeAdminPanel);
+adminOverlay.addEventListener("click", closeAdminPanel);
 
 function loadAdminSettings(){
   const settings = JSON.parse(localStorage.getItem("gameSettings") || "{}");
-  document.getElementById("maxTimer").value = settings.maxTimer || 3600;
   document.getElementById("animSpeed").value = settings.animSpeed || 100;
+  document.getElementById("animSpeedValue").textContent = (settings.animSpeed || 100) + "%";
   document.getElementById("colorPrincipal").value = settings.colorPrincipal || "#a855f7";
+  document.getElementById("overlayOpacity").value = settings.overlayOpacity || 30;
+  document.getElementById("overlayOpacityValue").textContent = (settings.overlayOpacity || 30) + "%";
 }
+
+// Actualizar valor en tiempo real de sliders
+document.getElementById("animSpeed").addEventListener("input", (e) => {
+  document.getElementById("animSpeedValue").textContent = e.target.value + "%";
+});
+
+document.getElementById("overlayOpacity").addEventListener("input", (e) => {
+  document.getElementById("overlayOpacityValue").textContent = e.target.value + "%";
+});
 
 adminSave.addEventListener("click", () => {
   const settings = {
-    maxTimer: parseInt(document.getElementById("maxTimer").value),
     animSpeed: parseInt(document.getElementById("animSpeed").value),
-    colorPrincipal: document.getElementById("colorPrincipal").value
+    colorPrincipal: document.getElementById("colorPrincipal").value,
+    overlayOpacity: parseInt(document.getElementById("overlayOpacity").value)
   };
   
   localStorage.setItem("gameSettings", JSON.stringify(settings));
   
-  // Aplicar cambios
+  // Aplicar cambios en tiempo real
   document.documentElement.style.setProperty("--purple", settings.colorPrincipal);
   
   const speedFactor = settings.animSpeed / 100;
@@ -246,20 +271,31 @@ adminSave.addEventListener("click", () => {
     layer.style.animationDuration = (24 * speedFactor) + "s";
   });
   
-  alert("⚙️ Cambios guardados correctamente");
+  // Ajustar opacidad del overlay
+  const overlayEl = document.querySelector(".overlay");
+  overlayEl.style.opacity = (settings.overlayOpacity / 100);
+  
+  alert("✅ Cambios guardados correctamente");
   closeAdminPanel();
 });
 
-// Cargar configuración guardada
+// Cargar configuración guardada al inicio
 window.addEventListener("load", () => {
   const settings = JSON.parse(localStorage.getItem("gameSettings") || "{}");
   if(settings.colorPrincipal){
     document.documentElement.style.setProperty("--purple", settings.colorPrincipal);
   }
+  if(settings.overlayOpacity){
+    document.querySelector(".overlay").style.opacity = (settings.overlayOpacity / 100);
+  }
+  if(settings.animSpeed){
+    const speedFactor = settings.animSpeed / 100;
+    const layers = document.querySelectorAll(".img-layer");
+    layers.forEach(layer => {
+      layer.style.animationDuration = (24 * speedFactor) + "s";
+    });
+  }
 });
-
-// Cerrar panel admin al tocar overlay
-adminOverlay.addEventListener("click", closeAdminPanel);
 
 
 // ============================

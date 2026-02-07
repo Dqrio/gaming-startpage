@@ -38,19 +38,14 @@
   <!-- Partículas -->
   <canvas id="particles" aria-hidden="true"></canvas>
 
-  <!-- Panel de Sugerencias de Búsqueda -->
-  <div class="search-suggestions" id="searchSuggestions">
-    <div class="suggestion-item" data-type="gaming">🎮 Gaming Tips</div>
-    <div class="suggestion-item" data-type="youtube">▶ YouTube Gaming</div>
-    <div class="suggestion-item" data-type="twitch">📡 Twitch Live</div>
-    <div class="suggestion-item" data-type="close">❌ Cerrar</div>
-  </div>
+  <!-- Botón Config Oculto (esquina superior derecha) -->
+  <button id="configBtn" class="config-btn" title="Configuración"></button>
 
   <!-- Panel de Login Admin -->
   <div class="admin-overlay" id="adminOverlay"></div>
   <div class="admin-panel" id="adminPanel">
     <div class="admin-login" id="adminLogin">
-      <h2 class="admin-title">Admin Control</h2>
+      <h2 class="admin-title">⚙️ Admin Control</h2>
       <input type="text" id="adminUser" class="admin-input" placeholder="Usuario" />
       <input type="password" id="adminPass" class="admin-input" placeholder="Contraseña" />
       <button id="adminSubmit" class="btn" style="width: 100%; margin-top: 15px;">Entrar</button>
@@ -60,19 +55,21 @@
       <h2 class="admin-title">⚙️ Configuración</h2>
       <div class="admin-options">
         <div class="admin-option">
-          <label>Timer Máximo (segundos)</label>
-          <input type="number" id="maxTimer" class="admin-input" min="60" max="3600" />
-        </div>
-        <div class="admin-option">
           <label>Velocidad Animación (%)</label>
-          <input type="number" id="animSpeed" class="admin-input" min="50" max="200" />
+          <input type="range" id="animSpeed" class="admin-slider" min="50" max="200" value="100" />
+          <span id="animSpeedValue">100%</span>
         </div>
         <div class="admin-option">
-          <label>Color Principal (Hex)</label>
+          <label>Color Principal</label>
           <input type="color" id="colorPrincipal" class="admin-input" />
         </div>
+        <div class="admin-option">
+          <label>Opacidad Overlay</label>
+          <input type="range" id="overlayOpacity" class="admin-slider" min="0" max="100" value="30" />
+          <span id="overlayOpacityValue">30%</span>
+        </div>
       </div>
-      <button id="adminSave" class="btn" style="width: 100%; margin-top: 20px;">Guardar Cambios</button>
+      <button id="adminSave" class="btn" style="width: 100%; margin-top: 20px;">💾 Guardar</button>
       <button id="adminLogout" class="btn ghost" style="width: 100%; margin-top: 10px;">Salir</button>
     </div>
   </div>
@@ -96,7 +93,7 @@
         <input id="q" class="searchInput" type="text" placeholder="Buscar en Google..." autocomplete="off" />
         <div class="searchBtns">
           <button id="goGoogle" class="btn small">Google</button>
-          <button id="goYouTube" class="btn small ghost" title="Toca para cerrar, mantén presionado para admin">YouTube</button>
+          <button id="goYouTube" class="btn small ghost">YouTube</button>
         </div>
       </div>
 
