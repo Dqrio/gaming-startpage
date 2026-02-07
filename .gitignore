@@ -1,0 +1,19 @@
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Node (si la usas en el futuro)
+node_modules/
+npm-debug.log
+package-lock.json
+
+# Otros
+*.log
