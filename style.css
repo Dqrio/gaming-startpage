@@ -4,6 +4,12 @@
   --purple2:#7c3aed;
   --purple3:#4c1d95;
   --white: #f5f3ff;
+  
+  /* Colores neon gaming */
+  --neon-cyan: #00D9FF;
+  --neon-magenta: #FF00FF;
+  --neon-lime: #00FF41;
+  --neon-pink: #FF0080;
 
   --glass: rgba(255,255,255,0.06);
   --glass2: rgba(255,255,255,0.10);
@@ -110,6 +116,87 @@ body{
   }
 }
 
+/* ========== GLITCH & CYBERPUNK EFFECTS ========== */
+
+/* Glitch effect para títulos */
+@keyframes glitch {
+  0% { clip-path: inset(0); }
+  20% { clip-path: inset(10% 0 65% 0); transform: translate(-2px, -2px); color: #00D9FF; }
+  40% { clip-path: inset(25% 0 35% 0); transform: translate(2px, 2px); color: #FF00FF; }
+  60% { clip-path: inset(55% 0 5% 0); transform: translate(-1px, 1px); color: #00FF41; }
+  80% { clip-path: inset(0); }
+  100% { clip-path: inset(0); }
+}
+
+/* Distorsión de color rápida */
+@keyframes colorShift {
+  0%, 100% { filter: hue-rotate(0deg); }
+  25% { filter: hue-rotate(90deg); }
+  50% { filter: hue-rotate(180deg); }
+  75% { filter: hue-rotate(270deg); }
+}
+
+/* Pulsación de brillo (cyberpunk) */
+@keyframes neonPulse {
+  0%, 100% { 
+    filter: brightness(1.0);
+    text-shadow: 0 0 10px rgba(168,85,247,0.5), 0 0 20px rgba(168,85,247,0.3);
+  }
+  50% { 
+    filter: brightness(1.15);
+    text-shadow: 0 0 20px rgba(168,85,247,0.8), 0 0 40px rgba(168,85,247,0.5);
+  }
+}
+
+/* Efecto de distorsión pixelada */
+@keyframes pixelDistort {
+  0%, 100% { filter: blur(0px) contrast(1.0); }
+  25% { filter: blur(2px) contrast(1.15); }
+  50% { filter: blur(1px) contrast(1.05); }
+  75% { filter: blur(2px) contrast(1.15); }
+}
+
+/* Escaneo horizontal (scan lines) */
+@keyframes scanlines {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(10px); }
+}
+
+/* Efecto de titileo agresivo */
+@keyframes flicker {
+  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
+  20%, 24%, 55% { opacity: 0.3; }
+}
+
+/* Brillo neon extremo en botones */
+@keyframes neonGlow {
+  0%, 100% { 
+    box-shadow: 0 0 10px rgba(168,85,247,0.4), inset 0 0 10px rgba(168,85,247,0.1);
+  }
+  50% { 
+    box-shadow: 0 0 20px rgba(168,85,247,0.8), inset 0 0 20px rgba(168,85,247,0.3);
+  }
+}
+
+/* Presión de botón */
+@keyframes pressDown {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.98); }
+  100% { transform: scale(1); }
+}
+
+/* Pulse agresivo para elementos de atención */
+@keyframes pulseMad {
+  0%, 100% { 
+    transform: scale(1);
+    filter: brightness(1.0);
+  }
+  50% { 
+    transform: scale(1.05);
+    filter: brightness(1.3);
+  }
+}
+
 /* Overlay morado + blur */
 .overlay{
   position: fixed;
@@ -174,8 +261,8 @@ body{
   padding: 22px;
   border-radius: var(--radius);
   background: linear-gradient(180deg, var(--glass), rgba(0,0,0,0.35));
-  border: 1px solid rgba(255,255,255,0.10);
-  box-shadow: var(--shadow);
+  border: 2px solid rgba(168,85,247,0.4);
+  box-shadow: 0 0 25px rgba(168,85,247,0.4), 0 0 50px rgba(168,85,247,0.2), var(--shadow);
   text-align: center;
   animation: floatIn 900ms ease forwards;
 }
@@ -190,6 +277,8 @@ body{
   letter-spacing: 0.22em;
   color: rgba(245,243,255,0.85);
   margin-bottom: 16px;
+  animation: glitch 0.3s ease-in-out infinite;
+  font-weight: 900;
 }
 
 /* Clock */
@@ -205,6 +294,8 @@ body{
   font-weight: 800;
   letter-spacing: 0.06em;
   text-shadow: 0 0 18px rgba(168,85,247,0.35);
+  animation: neonPulse 2.5s ease-in-out infinite;
+  color: #a855f7;
 }
 
 .date{
@@ -232,8 +323,9 @@ body{
 .timer{
   font-size: 28px;
   font-weight: 700;
-  color: rgba(168,85,247,0.95);
-  text-shadow: 0 0 20px rgba(168,85,247,0.25);
+  color: var(--neon-cyan);
+  text-shadow: 0 0 20px rgba(0, 217, 255, 0.6), 0 0 40px rgba(0, 217, 255, 0.3);
+  animation: flicker 0.15s ease-in-out, neonPulse 3s ease-in-out infinite;
 }
 
 /* Search */
@@ -249,15 +341,19 @@ body{
   width: 100%;
   padding: 14px 14px;
   border-radius: 16px;
-  border: 1px solid rgba(255,255,255,0.10);
+  border: 2px solid rgba(0, 217, 255, 0.3);
   background: rgba(0,0,0,0.30);
   color: var(--white);
   outline: none;
   font-size: 16px;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 10px rgba(0, 217, 255, 0.2);
 }
 
-.searchInput::placeholder{
-  color: rgba(245,243,255,0.55);
+.searchInput:focus{
+  border-color: var(--neon-cyan);
+  background: rgba(0,0,0,0.5);
+  box-shadow: 0 0 20px rgba(0, 217, 255, 0.6), inset 0 0 10px rgba(0, 217, 255, 0.1);
 }
 
 .searchBtns{
@@ -285,8 +381,10 @@ body{
   cursor: pointer;
   background: linear-gradient(135deg, rgba(168,85,247,0.95), rgba(124,58,237,0.85));
   color: white;
-  box-shadow: 0 10px 25px rgba(168,85,247,0.18);
-  transition: transform 0.15s ease, filter 0.15s ease;
+  box-shadow: 0 0 15px rgba(168,85,247,0.6), 0 0 30px rgba(168,85,247,0.3);
+  transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease;
+  animation: neonGlow 2s ease-in-out infinite;
+  border: 1px solid rgba(168,85,247,0.5);
 }
 
 .btn.small{
@@ -294,8 +392,15 @@ body{
   border-radius: 14px;
 }
 
+.btn:hover{
+  transform: scale(1.08) !important;
+  filter: brightness(1.2);
+  box-shadow: 0 0 25px rgba(168,85,247,0.9), 0 0 50px rgba(168,85,247,0.5), inset 0 0 15px rgba(255,255,255,0.2);
+}
+
 .btn:active{
   transform: scale(0.98);
+  filter: brightness(0.95);
 }
 
 .btn.ghost{
@@ -340,7 +445,7 @@ body{
   transform: translate(-50%, -50%);
   z-index: 12;
   background: linear-gradient(180deg, rgba(7,1,15,0.98), rgba(7,1,15,0.90));
-  border: 2px solid rgba(168,85,247,0.5);
+  border: 2px solid rgba(0, 217, 255, 0.6);
   border-radius: 28px;
   padding: 28px;
   width: min(90vw, 420px);
@@ -348,7 +453,7 @@ body{
   overflow-y: auto;
   display: none;
   animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-  box-shadow: 0 30px 100px rgba(168,85,247,0.4);
+  box-shadow: 0 0 30px rgba(0, 217, 255, 0.5), 0 0 60px rgba(168,85,247,0.3);
 }
 
 .admin-panel.active{
@@ -368,17 +473,18 @@ body{
 .admin-title{
   font-size: 20px;
   font-weight: 800;
-  color: rgba(168,85,247,1);
+  color: var(--neon-cyan);
   margin-bottom: 24px;
   text-align: center;
-  text-shadow: 0 0 15px rgba(168,85,247,0.4);
+  text-shadow: 0 0 15px rgba(0, 217, 255, 0.8), 0 0 30px rgba(0, 217, 255, 0.4);
+  animation: glitch 0.4s ease-in-out infinite;
 }
 
 .admin-input{
   width: 100%;
   padding: 12px 14px;
   border-radius: 14px;
-  border: 1.5px solid rgba(168,85,247,0.3);
+  border: 1.5px solid rgba(0, 217, 255, 0.4);
   background: rgba(0,0,0,0.5);
   color: white;
   font-size: 14px;
@@ -388,8 +494,8 @@ body{
 }
 
 .admin-input:focus{
-  border-color: rgba(168,85,247,0.9);
-  box-shadow: 0 0 20px rgba(168,85,247,0.4);
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 20px rgba(0, 217, 255, 0.8), inset 0 0 10px rgba(0, 217, 255, 0.2);
   background: rgba(0,0,0,0.7);
 }
 
@@ -403,7 +509,7 @@ body{
   width: 100%;
   height: 6px;
   border-radius: 3px;
-  background: rgba(168,85,247,0.2);
+  background: rgba(0, 217, 255, 0.2);
   outline: none;
   -webkit-appearance: none;
   appearance: none;
@@ -416,19 +522,25 @@ body{
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: rgba(168,85,247,0.95);
+  background: var(--neon-cyan);
   cursor: pointer;
-  box-shadow: 0 0 10px rgba(168,85,247,0.5);
+  box-shadow: 0 0 15px rgba(0, 217, 255, 0.8);
+  transition: all 0.2s ease;
+}
+
+.admin-slider::-webkit-slider-thumb:hover{
+  box-shadow: 0 0 25px rgba(0, 217, 255, 1);
+  transform: scale(1.2);
 }
 
 .admin-slider::-moz-range-thumb{
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: rgba(168,85,247,0.95);
+  background: var(--neon-cyan);
   cursor: pointer;
   border: none;
-  box-shadow: 0 0 10px rgba(168,85,247,0.5);
+  box-shadow: 0 0 15px rgba(0, 217, 255, 0.8);
 }
 
 .admin-options{
@@ -445,16 +557,48 @@ body{
 
 .admin-option label{
   font-size: 13px;
-  color: rgba(168,85,247,0.9);
+  color: var(--neon-cyan);
   margin-bottom: 8px;
   font-weight: 600;
   letter-spacing: 0.5px;
+  text-shadow: 0 0 10px rgba(0, 217, 255, 0.4);
 }
 
 .admin-option span{
   font-size: 11px;
-  color: rgba(168,85,247,0.6);
+  color: rgba(0, 217, 255, 0.6);
   margin-top: 4px;
+}
+
+.preset-buttons{
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.preset-btn{
+  flex: 1;
+  padding: 10px;
+  border: 1.5px solid rgba(0, 217, 255, 0.3);
+  background: rgba(0, 217, 255, 0.05);
+  color: var(--neon-cyan);
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 12px;
+  transition: all 0.3s ease;
+}
+
+.preset-btn:hover{
+  border-color: var(--neon-cyan);
+  background: rgba(0, 217, 255, 0.15);
+  box-shadow: 0 0 15px rgba(0, 217, 255, 0.4);
+}
+
+.preset-btn.active{
+  background: var(--neon-cyan);
+  color: #07010f;
+  box-shadow: 0 0 20px rgba(0, 217, 255, 0.8);
 }
 
 @keyframes slideUp{
@@ -477,4 +621,21 @@ body{
   .search.active{
     transform: translateY(-60px);
   }
+}
+
+/* ========== SCANLINES OVERLAY ========== */
+.scanlines {
+  position: fixed;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.08),
+    rgba(0, 0, 0, 0.08) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+  animation: scanlines 8s linear infinite;
+  opacity: 0.5;
 }

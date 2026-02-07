@@ -22,12 +22,13 @@ const adminReset = document.getElementById("adminReset");
 const adminLogout = document.getElementById("adminLogout");
 
 let reduceMotion = false;
+let particleCount = 80; // Inicializar con valor por defecto
 
 // ============================
 // ADMIN CREDENTIALS
 // ============================
-const ADMIN_USER = "admi";
-const ADMIN_PASS = "admi";
+const ADMIN_USER = "Dq";
+const ADMIN_PASS = "Dqrio";
 
 // ============================
 // 1) Clock
@@ -203,7 +204,7 @@ adminSubmit.addEventListener("click", () => {
     adminDashboard.style.display = "block";
     loadAdminSettings();
   }else{
-    alert("❌ Credenciales incorrectas\nIntenta: admi / admi");
+    alert("❌ Credenciales incorrectas\nIntenta: Dq / Dqrio");
     adminPass.value = "";
     adminPass.focus();
   }
@@ -220,6 +221,19 @@ function loadAdminSettings(){
   document.getElementById("colorPrincipal").value = settings.colorPrincipal || "#a855f7";
   document.getElementById("overlayOpacity").value = settings.overlayOpacity || 30;
   document.getElementById("overlayOpacityValue").textContent = (settings.overlayOpacity || 30) + "%";
+  
+  // Nuevas opciones
+  document.getElementById("glowIntensity").value = settings.glowIntensity || 100;
+  document.getElementById("glowIntensityValue").textContent = (settings.glowIntensity || 100) + "%";
+  document.getElementById("particleCount").value = settings.particleCount || 80;
+  document.getElementById("particleCountValue").textContent = (settings.particleCount || 80);
+  
+  // Cargar preset seleccionado
+  const preset = settings.preset || "gaming";
+  document.querySelectorAll(".preset-btn").forEach(btn => {
+    btn.classList.remove("active");
+    if(btn.dataset.preset === preset) btn.classList.add("active");
+  });
 }
 
 // Actualizar valor en tiempo real de sliders
@@ -231,11 +245,47 @@ document.getElementById("overlayOpacity").addEventListener("input", (e) => {
   document.getElementById("overlayOpacityValue").textContent = e.target.value + "%";
 });
 
+document.getElementById("glowIntensity").addEventListener("input", (e) => {
+  document.getElementById("glowIntensityValue").textContent = e.target.value + "%";
+});
+
+document.getElementById("particleCount").addEventListener("input", (e) => {
+  document.getElementById("particleCountValue").textContent = e.target.value;
+});
+
+// Preset buttons
+document.querySelectorAll(".preset-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const preset = btn.dataset.preset;
+    
+    document.querySelectorAll(".preset-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    
+    // Aplicar valores predefinidos
+    const presets = {
+      "chill": { animSpeed: 150, glowIntensity: 50 },
+      "normal": { animSpeed: 100, glowIntensity: 100 },
+      "gaming": { animSpeed: 125, glowIntensity: 150 }
+    };
+    
+    const config = presets[preset];
+    if(config){
+      document.getElementById("animSpeed").value = config.animSpeed;
+      document.getElementById("animSpeedValue").textContent = config.animSpeed + "%";
+      document.getElementById("glowIntensity").value = config.glowIntensity;
+      document.getElementById("glowIntensityValue").textContent = config.glowIntensity + "%";
+    }
+  });
+});
+
 adminSave.addEventListener("click", () => {
   const settings = {
     animSpeed: parseInt(document.getElementById("animSpeed").value),
     colorPrincipal: document.getElementById("colorPrincipal").value,
-    overlayOpacity: parseInt(document.getElementById("overlayOpacity").value)
+    overlayOpacity: parseInt(document.getElementById("overlayOpacity").value),
+    glowIntensity: parseInt(document.getElementById("glowIntensity").value),
+    particleCount: parseInt(document.getElementById("particleCount").value),
+    preset: document.querySelector(".preset-btn.active").dataset.preset
   };
   
   localStorage.setItem("gameSettings", JSON.stringify(settings));
@@ -252,6 +302,13 @@ adminSave.addEventListener("click", () => {
   // Ajustar opacidad del overlay
   const overlayEl = document.querySelector(".overlay");
   overlayEl.style.opacity = (settings.overlayOpacity / 100);
+  
+  // Aplicar intensidad de glow (modificar opacity de elementos con animación neonGlow)
+  const glowFactor = settings.glowIntensity / 100;
+  document.documentElement.style.setProperty("--glow-intensity", glowFactor);
+  
+  // Actualizar cantidad de partículas
+  particleCount = settings.particleCount;
   
   alert("✅ Cambios guardados correctamente");
   closeAdminPanel();
@@ -293,6 +350,13 @@ window.addEventListener("load", () => {
     layers.forEach(layer => {
       layer.style.animationDuration = (24 * speedFactor) + "s";
     });
+  }
+  if(settings.glowIntensity){
+    const glowFactor = settings.glowIntensity / 100;
+    document.documentElement.style.setProperty("--glow-intensity", glowFactor);
+  }
+  if(settings.particleCount){
+    particleCount = settings.particleCount;
   }
 });
 

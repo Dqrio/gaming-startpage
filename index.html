@@ -49,21 +49,39 @@
       <button id="adminClose" class="btn ghost" style="width: 100%; margin-top: 10px;">Cerrar</button>
     </div>
     <div class="admin-dashboard" id="adminDashboard" style="display: none;">
-      <h2 class="admin-title">⚙️ Configuración</h2>
+      <h2 class="admin-title">⚙️ CONFIGURACIÓN GAMING</h2>
       <div class="admin-options">
         <div class="admin-option">
-          <label>Velocidad Animación (%)</label>
+          <label>🚀 Velocidad Animación</label>
           <input type="range" id="animSpeed" class="admin-slider" min="50" max="200" value="100" />
           <span id="animSpeedValue">100%</span>
         </div>
         <div class="admin-option">
-          <label>Color Principal</label>
+          <label>🎨 Color Principal</label>
           <input type="color" id="colorPrincipal" class="admin-input" />
         </div>
         <div class="admin-option">
-          <label>Opacidad Overlay</label>
+          <label>👻 Opacidad Overlay</label>
           <input type="range" id="overlayOpacity" class="admin-slider" min="0" max="100" value="30" />
           <span id="overlayOpacityValue">30%</span>
+        </div>
+        <div class="admin-option">
+          <label>✨ Intensidad Glow</label>
+          <input type="range" id="glowIntensity" class="admin-slider" min="0" max="150" value="100" />
+          <span id="glowIntensityValue">100%</span>
+        </div>
+        <div class="admin-option">
+          <label>💥 Cantidad Partículas</label>
+          <input type="range" id="particleCount" class="admin-slider" min="20" max="200" value="80" />
+          <span id="particleCountValue">80</span>
+        </div>
+        <div class="admin-option">
+          <label>⚡ Preset Velocidad</label>
+          <div class="preset-buttons">
+            <button class="preset-btn" data-preset="chill">Chill</button>
+            <button class="preset-btn" data-preset="normal">Normal</button>
+            <button class="preset-btn active" data-preset="gaming">Gaming</button>
+          </div>
         </div>
       </div>
       <button id="adminSave" class="btn" style="width: 100%; margin-top: 20px;">💾 Guardar</button>
@@ -102,6 +120,9 @@
       <p class="hint">Tip: añade esta página como "Página principal" en Chrome Android.</p>
     </section>
   </main>
+
+  <!-- Scan lines effect -->
+  <div class="scanlines" aria-hidden="true"></div>
 
   <script src="app.js"></script>
 </body>
