@@ -9,7 +9,26 @@ const qInput = document.getElementById("q");
 const goGoogle = document.getElementById("goGoogle");
 const goYouTube = document.getElementById("goYouTube");
 
+// Admin & Suggestions
+const searchSuggestions = document.getElementById("searchSuggestions");
+const adminOverlay = document.getElementById("adminOverlay");
+const adminPanel = document.getElementById("adminPanel");
+const adminLogin = document.getElementById("adminLogin");
+const adminDashboard = document.getElementById("adminDashboard");
+const adminUser = document.getElementById("adminUser");
+const adminPass = document.getElementById("adminPass");
+const adminSubmit = document.getElementById("adminSubmit");
+const adminClose = document.getElementById("adminClose");
+const adminSave = document.getElementById("adminSave");
+const adminLogout = document.getElementById("adminLogout");
+
 let reduceMotion = false;
+
+// ============================
+// ADMIN CREDENTIALS (CAMBIAR AQUÍ)
+// ============================
+const ADMIN_USER = "admin";
+const ADMIN_PASS = "gaming123";
 
 // ============================
 // 1) Clock
@@ -94,7 +113,7 @@ motionBtn.addEventListener("click", () => {
 
 
 // ============================
-// 5) Search
+// 5) Search & Suggestions
 // ============================
 function cleanQuery(q){
   return encodeURIComponent(q.trim());
@@ -106,21 +125,141 @@ function go(type){
 
   if(type === "google"){
     window.location.href = `https://www.google.com/search?q=${cleanQuery(q)}`;
-  }else{
+  }else if(type === "youtube"){
     window.location.href = `https://www.youtube.com/results?search_query=${cleanQuery(q)}`;
+  }else if(type === "gaming"){
+    window.location.href = `https://www.google.com/search?q=gaming+${cleanQuery(q)}`;
+  }else if(type === "twitch"){
+    window.location.href = `https://www.twitch.tv/search?term=${cleanQuery(q)}`;
   }
 }
 
+// Panel de sugerencias
+qInput.addEventListener("focus", () => {
+  searchSuggestions.classList.add("active");
+});
+
+document.querySelectorAll(".suggestion-item").forEach(item => {
+  item.addEventListener("click", () => {
+    const type = item.dataset.type;
+    if(type === "close"){
+      searchSuggestions.classList.remove("active");
+      qInput.blur();
+    }else{
+      go(type);
+    }
+  });
+});
+
 goGoogle.addEventListener("click", () => go("google"));
-goYouTube.addEventListener("click", () => {
-  window.close();
-  // Si no se puede cerrar (navegador bloquea), intenta ir atrás
-  setTimeout(() => { window.history.back(); }, 100);
+
+// YouTube: toque corto = cerrar, toque largo = admin
+let youtubeTimeout;
+goYouTube.addEventListener("touchstart", () => {
+  youtubeTimeout = setTimeout(() => {
+    openAdminPanel();
+  }, 1000); // 1 segundo = toque largo
+});
+
+goYouTube.addEventListener("touchend", () => {
+  clearTimeout(youtubeTimeout);
+  closeSearch();
+});
+
+goYouTube.addEventListener("click", (e) => {
+  if(!e.defaultPrevented){
+    closeSearch();
+  }
 });
 
 qInput.addEventListener("keydown", (e) => {
-  if(e.key === "Enter") go("google");
+  if(e.key === "Enter"){
+    go("google");
+    searchSuggestions.classList.remove("active");
+  }
 });
+
+function closeSearch(){
+  window.close();
+  setTimeout(() => { window.history.back(); }, 100);
+}
+
+// ============================
+// Admin Panel Logic
+// ============================
+function openAdminPanel(){
+  adminOverlay.classList.add("active");
+  adminPanel.classList.add("active");
+  adminLogin.style.display = "block";
+  adminDashboard.style.display = "none";
+  adminUser.focus();
+}
+
+function closeAdminPanel(){
+  adminOverlay.classList.remove("active");
+  adminPanel.classList.remove("active");
+  adminLogin.style.display = "block";
+  adminDashboard.style.display = "none";
+  adminUser.value = "";
+  adminPass.value = "";
+}
+
+adminSubmit.addEventListener("click", () => {
+  const user = adminUser.value.trim();
+  const pass = adminPass.value.trim();
+  
+  if(user === ADMIN_USER && pass === ADMIN_PASS){
+    adminLogin.style.display = "none";
+    adminDashboard.style.display = "block";
+    loadAdminSettings();
+  }else{
+    alert("Credenciales incorrectas");
+    adminPass.value = "";
+  }
+});
+
+adminClose.addEventListener("click", closeAdminPanel);
+adminLogout.addEventListener("click", closeAdminPanel);
+
+function loadAdminSettings(){
+  const settings = JSON.parse(localStorage.getItem("gameSettings") || "{}");
+  document.getElementById("maxTimer").value = settings.maxTimer || 3600;
+  document.getElementById("animSpeed").value = settings.animSpeed || 100;
+  document.getElementById("colorPrincipal").value = settings.colorPrincipal || "#a855f7";
+}
+
+adminSave.addEventListener("click", () => {
+  const settings = {
+    maxTimer: parseInt(document.getElementById("maxTimer").value),
+    animSpeed: parseInt(document.getElementById("animSpeed").value),
+    colorPrincipal: document.getElementById("colorPrincipal").value
+  };
+  
+  localStorage.setItem("gameSettings", JSON.stringify(settings));
+  
+  // Aplicar cambios
+  document.documentElement.style.setProperty("--purple", settings.colorPrincipal);
+  
+  const speedFactor = settings.animSpeed / 100;
+  const layers = document.querySelectorAll(".img-layer");
+  layers.forEach(layer => {
+    layer.style.animationDuration = (24 * speedFactor) + "s";
+  });
+  
+  alert("⚙️ Cambios guardados correctamente");
+  closeAdminPanel();
+});
+
+// Cargar configuración guardada
+window.addEventListener("load", () => {
+  const settings = JSON.parse(localStorage.getItem("gameSettings") || "{}");
+  if(settings.colorPrincipal){
+    document.documentElement.style.setProperty("--purple", settings.colorPrincipal);
+  }
+});
+
+// Cerrar panel admin al tocar overlay
+adminOverlay.addEventListener("click", closeAdminPanel);
 
 
 // ============================
