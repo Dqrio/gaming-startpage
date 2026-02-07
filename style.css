@@ -127,7 +127,7 @@ body{
   position: fixed;
   inset: -30%;
   z-index: 2;
-  background-image: url("assets/noise.png");
+  background-image: url("assets/optimized/noise.png");
   opacity: 0.10;
   mix-blend-mode: overlay;
   pointer-events: none;
