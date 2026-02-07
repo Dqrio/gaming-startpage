@@ -142,39 +142,19 @@ qInput.addEventListener("blur", () => {
 
 goGoogle.addEventListener("click", () => go("google"));
 
-// YouTube: toque corto = cierra navegador, toque largo = admin
-let youtubeTimeout;
-let youtubePressed = false;
-
-goYouTube.addEventListener("mousedown", () => {
-  youtubePressed = true;
-  youtubeTimeout = setTimeout(() => {
-    youtubePressed = false;
-    openAdminPanel();
-  }, 1000); // 1 segundo = toque largo
-});
-
-goYouTube.addEventListener("mouseup", () => {
-  clearTimeout(youtubeTimeout);
-  if(youtubePressed){
-    youtubePressed = false;
-    closeSearch();
-  }
-});
-
-goYouTube.addEventListener("touchstart", () => {
-  youtubePressed = true;
-  youtubeTimeout = setTimeout(() => {
-    youtubePressed = false;
-    openAdminPanel();
-  }, 1000);
-});
-
-goYouTube.addEventListener("touchend", () => {
-  clearTimeout(youtubeTimeout);
-  if(youtubePressed){
-    youtubePressed = false;
-    closeSearch();
+// YouTube: simplemente cierra el navegador
+goYouTube.addEventListener("click", (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  
+  // Intenta cerrar la ventana
+  const closed = window.close();
+  
+  // Si no se puede cerrar, intenta cerrar la pestaña o ir atrás
+  if(!closed){
+    setTimeout(() => {
+      window.history.back();
+    }, 100);
   }
 });
 
@@ -190,9 +170,6 @@ function closeSearch(){
   }
   window.history.back();
 }
-
-// Botón config oculto
-configBtn.addEventListener("click", openAdminPanel);
 
 // ============================
 // Admin Panel Logic
