@@ -7,10 +7,8 @@ const motionBtn = document.getElementById("toggleMotion");
 
 const qInput = document.getElementById("q");
 const goGoogle = document.getElementById("goGoogle");
-const goYouTube = document.getElementById("goYouTube");
 
-// Admin & Suggestions
-const searchSuggestions = document.getElementById("searchSuggestions");
+// Admin & Config
 const adminOverlay = document.getElementById("adminOverlay");
 const adminPanel = document.getElementById("adminPanel");
 const adminLogin = document.getElementById("adminLogin");
@@ -20,6 +18,7 @@ const adminPass = document.getElementById("adminPass");
 const adminSubmit = document.getElementById("adminSubmit");
 const adminClose = document.getElementById("adminClose");
 const adminSave = document.getElementById("adminSave");
+const adminReset = document.getElementById("adminReset");
 const adminLogout = document.getElementById("adminLogout");
 const configBtn = document.getElementById("configBtn");
 
@@ -114,7 +113,7 @@ motionBtn.addEventListener("click", () => {
 
 
 // ============================
-// 5) Search & Admin
+// 5) Search
 // ============================
 function cleanQuery(q){
   return encodeURIComponent(q.trim());
@@ -126,10 +125,16 @@ function go(type){
 
   if(type === "google"){
     window.location.href = `https://www.google.com/search?q=${cleanQuery(q)}`;
-  }else if(type === "youtube"){
-    window.location.href = `https://www.youtube.com/results?search_query=${cleanQuery(q)}`;
   }
 }
+
+goGoogle.addEventListener("click", () => go("google"));
+
+qInput.addEventListener("keydown", (e) => {
+  if(e.key === "Enter"){
+    go("google");
+  }
+});
 
 // Animación de subida del buscador al enfocar
 qInput.addEventListener("focus", () => {
@@ -140,25 +145,32 @@ qInput.addEventListener("blur", () => {
   document.querySelector(".search").classList.remove("active");
 });
 
-goGoogle.addEventListener("click", () => go("google"));
-goYouTube.addEventListener("click", () => {
-  window.close();
-  // Si no se puede cerrar (navegador bloquea), intenta ir atrás
-  setTimeout(() => { window.history.back(); }, 100);
+// ============================
+// Config Button: Long Press para abrir Admin
+// ============================
+let configTimeout;
+
+configBtn.addEventListener("mousedown", () => {
+  configTimeout = setTimeout(() => {
+    openAdminPanel();
+  }, 1000); // 1 segundo = mantener presionado
 });
 
-qInput.addEventListener("keydown", (e) => {
-  if(e.key === "Enter"){
-    go("google");
-  }
+configBtn.addEventListener("mouseup", () => {
+  clearTimeout(configTimeout);
 });
 
-function closeSearch(){
-  if(window.close()){
-    return true;
-  }
-  window.history.back();
-}
+configBtn.addEventListener("touchstart", (e) => {
+  e.preventDefault();
+  configTimeout = setTimeout(() => {
+    openAdminPanel();
+  }, 1000);
+});
+
+configBtn.addEventListener("touchend", (e) => {
+  e.preventDefault();
+  clearTimeout(configTimeout);
+});
 
 // ============================
 // Admin Panel Logic
@@ -243,6 +255,27 @@ adminSave.addEventListener("click", () => {
   
   alert("✅ Cambios guardados correctamente");
   closeAdminPanel();
+});
+
+// Botón Restablecer
+adminReset.addEventListener("click", () => {
+  if(confirm("¿Restablecer configuración a valores por defecto?")){
+    localStorage.removeItem("gameSettings");
+    
+    // Restaurar valores por defecto
+    document.documentElement.style.setProperty("--purple", "#a855f7");
+    
+    const layers = document.querySelectorAll(".img-layer");
+    layers.forEach(layer => {
+      layer.style.animationDuration = "24s";
+    });
+    
+    const overlayEl = document.querySelector(".overlay");
+    overlayEl.style.opacity = "0.3";
+    
+    loadAdminSettings(); // Recarga los valores en el panel
+    alert("✅ Configuración restablecida");
+  }
 });
 
 // Cargar configuración guardada al inicio
