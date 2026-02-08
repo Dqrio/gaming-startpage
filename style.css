@@ -4,6 +4,7 @@
   --purple2:#7c3aed;
   --purple3:#4c1d95;
   --white: #f5f3ff;
+  --glow-intensity: 1;
   
   /* Colores neon gaming */
   --neon-cyan: #00D9FF;
@@ -51,8 +52,9 @@ body{
   background-position: center;
   background-repeat: no-repeat;
   opacity: 0;
-  filter: saturate(1.3) brightness(0.9) contrast(1.1);
+  filter: saturate(1.15) brightness(0.95) contrast(1.05);
   animation: vegasFade 24s ease-in-out infinite;
+  will-change: opacity, transform;
 }
 
 /* Cada imagen tiene un delay diferente para efecto Las Vegas */
@@ -92,27 +94,27 @@ body{
   0% { 
     opacity: 0; 
     transform: scale(1.05);
-    filter: saturate(1.4) brightness(1.0) contrast(1.2);
+    filter: saturate(1.2) brightness(1.0) contrast(1.1);
   }
   8% { 
     opacity: 1; 
     transform: scale(1.08);
-    filter: saturate(1.6) brightness(1.1) contrast(1.25);
+    filter: saturate(1.3) brightness(1.05) contrast(1.15);
   }
   20% { 
     opacity: 1; 
     transform: scale(1.1);
-    filter: saturate(1.6) brightness(1.1) contrast(1.25);
+    filter: saturate(1.3) brightness(1.05) contrast(1.15);
   }
   28% { 
     opacity: 0; 
     transform: scale(1.12);
-    filter: saturate(1.4) brightness(1.0) contrast(1.2);
+    filter: saturate(1.2) brightness(1.0) contrast(1.1);
   }
   100% { 
     opacity: 0; 
     transform: scale(1.05);
-    filter: saturate(1.4) brightness(1.0) contrast(1.2);
+    filter: saturate(1.2) brightness(1.0) contrast(1.1);
   }
 }
 
@@ -207,7 +209,7 @@ body{
     radial-gradient(circle at 80% 30%, rgba(124,58,237,0.12), transparent 60%),
     radial-gradient(circle at 50% 80%, rgba(76,29,149,0.15), transparent 55%),
     linear-gradient(180deg, rgba(0,0,0,0.30), rgba(0,0,0,0.45));
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(4px);
 }
 /* Grain */
 .grain{
@@ -215,10 +217,10 @@ body{
   inset: -30%;
   z-index: 2;
   background-image: url("assets/optimized/noise.png");
-  opacity: 0.10;
+  opacity: 0.06;
   mix-blend-mode: overlay;
   pointer-events: none;
-  animation: grainMove 6s steps(8) infinite;
+  animation: grainMove 12s steps(6) infinite;
   transform: rotate(2deg);
 }
 
@@ -277,7 +279,7 @@ body{
   letter-spacing: 0.22em;
   color: rgba(245,243,255,0.85);
   margin-bottom: 16px;
-  animation: glitch 0.3s ease-in-out infinite;
+  animation: glitch 1.2s steps(2, end) infinite;
   font-weight: 900;
 }
 
@@ -293,7 +295,7 @@ body{
   font-size: 46px;
   font-weight: 800;
   letter-spacing: 0.06em;
-  text-shadow: 0 0 18px rgba(168,85,247,0.35);
+  text-shadow: 0 0 18px rgba(168,85,247, calc(0.35 * var(--glow-intensity)));
   animation: neonPulse 2.5s ease-in-out infinite;
   color: #a855f7;
 }
@@ -324,8 +326,8 @@ body{
   font-size: 28px;
   font-weight: 700;
   color: var(--neon-cyan);
-  text-shadow: 0 0 20px rgba(0, 217, 255, 0.6), 0 0 40px rgba(0, 217, 255, 0.3);
-  animation: flicker 0.15s ease-in-out, neonPulse 3s ease-in-out infinite;
+  text-shadow: 0 0 20px rgba(0, 217, 255, calc(0.6 * var(--glow-intensity))), 0 0 40px rgba(0, 217, 255, calc(0.3 * var(--glow-intensity)));
+  animation: flicker 1.6s steps(2, end) infinite, neonPulse 3s ease-in-out infinite;
 }
 
 /* Search */
@@ -381,9 +383,9 @@ body{
   cursor: pointer;
   background: linear-gradient(135deg, rgba(168,85,247,0.95), rgba(124,58,237,0.85));
   color: white;
-  box-shadow: 0 0 15px rgba(168,85,247,0.6), 0 0 30px rgba(168,85,247,0.3);
+  box-shadow: 0 0 15px rgba(168,85,247, calc(0.6 * var(--glow-intensity))), 0 0 30px rgba(168,85,247, calc(0.3 * var(--glow-intensity)));
   transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease;
-  animation: neonGlow 2s ease-in-out infinite;
+  animation: neonGlow 3s ease-in-out infinite;
   border: 1px solid rgba(168,85,247,0.5);
 }
 
@@ -395,7 +397,7 @@ body{
 .btn:hover{
   transform: scale(1.08) !important;
   filter: brightness(1.2);
-  box-shadow: 0 0 25px rgba(168,85,247,0.9), 0 0 50px rgba(168,85,247,0.5), inset 0 0 15px rgba(255,255,255,0.2);
+  box-shadow: 0 0 25px rgba(168,85,247, calc(0.9 * var(--glow-intensity))), 0 0 50px rgba(168,85,247, calc(0.5 * var(--glow-intensity))), inset 0 0 15px rgba(255,255,255,0.2);
 }
 
 .btn:active{
@@ -636,6 +638,46 @@ body{
     transparent 1px,
     transparent 2px
   );
-  animation: scanlines 8s linear infinite;
-  opacity: 0.5;
+  animation: scanlines 14s linear infinite;
+  opacity: 0.25;
+}
+
+/* ========== LOW-END MODE ========== */
+body.low-end .grain,
+body.low-end .scanlines,
+body.low-end #particles{
+  display: none;
+}
+
+body.low-end .overlay{
+  backdrop-filter: none;
+}
+
+body.low-end .img-layer{
+  animation-duration: 40s;
+  filter: saturate(1.05) brightness(0.98) contrast(1.02);
+}
+
+body.low-end .title,
+body.low-end .timer,
+body.low-end .btn{
+  animation: none !important;
+}
+
+body.low-end .btn,
+body.low-end .clock,
+body.low-end .timer{
+  text-shadow: none;
+  box-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce){
+  .img-layer,
+  .title,
+  .timer,
+  .btn,
+  .grain,
+  .scanlines{
+    animation: none !important;
+  }
 }

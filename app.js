@@ -22,7 +22,8 @@ const adminReset = document.getElementById("adminReset");
 const adminLogout = document.getElementById("adminLogout");
 
 let reduceMotion = false;
-let particleCount = 80; // Inicializar con valor por defecto
+const DEFAULT_PARTICLE_COUNT = 60;
+let particleCount = DEFAULT_PARTICLE_COUNT;
 
 // ============================
 // ADMIN CREDENTIALS
@@ -225,8 +226,8 @@ function loadAdminSettings(){
   // Nuevas opciones
   document.getElementById("glowIntensity").value = settings.glowIntensity || 100;
   document.getElementById("glowIntensityValue").textContent = (settings.glowIntensity || 100) + "%";
-  document.getElementById("particleCount").value = settings.particleCount || 80;
-  document.getElementById("particleCountValue").textContent = (settings.particleCount || 80);
+  document.getElementById("particleCount").value = settings.particleCount || DEFAULT_PARTICLE_COUNT;
+  document.getElementById("particleCountValue").textContent = (settings.particleCount || DEFAULT_PARTICLE_COUNT);
   
   // Cargar preset seleccionado
   const preset = settings.preset || "gaming";
@@ -234,6 +235,8 @@ function loadAdminSettings(){
     btn.classList.remove("active");
     if(btn.dataset.preset === preset) btn.classList.add("active");
   });
+
+  document.body.classList.toggle("low-end", preset === "low");
 }
 
 // Actualizar valor en tiempo real de sliders
@@ -263,6 +266,7 @@ document.querySelectorAll(".preset-btn").forEach(btn => {
     
     // Aplicar valores predefinidos
     const presets = {
+      "low": { animSpeed: 180, glowIntensity: 40, particleCount: 30, overlayOpacity: 25 },
       "chill": { animSpeed: 150, glowIntensity: 50 },
       "normal": { animSpeed: 100, glowIntensity: 100 },
       "gaming": { animSpeed: 125, glowIntensity: 150 }
@@ -274,7 +278,17 @@ document.querySelectorAll(".preset-btn").forEach(btn => {
       document.getElementById("animSpeedValue").textContent = config.animSpeed + "%";
       document.getElementById("glowIntensity").value = config.glowIntensity;
       document.getElementById("glowIntensityValue").textContent = config.glowIntensity + "%";
+      if(config.particleCount !== undefined){
+        document.getElementById("particleCount").value = config.particleCount;
+        document.getElementById("particleCountValue").textContent = config.particleCount;
+      }
+      if(config.overlayOpacity !== undefined){
+        document.getElementById("overlayOpacity").value = config.overlayOpacity;
+        document.getElementById("overlayOpacityValue").textContent = config.overlayOpacity + "%";
+      }
     }
+
+    document.body.classList.toggle("low-end", preset === "low");
   });
 });
 
@@ -309,6 +323,9 @@ adminSave.addEventListener("click", () => {
   
   // Actualizar cantidad de partículas
   particleCount = settings.particleCount;
+  buildParticles(particleCount);
+
+  document.body.classList.toggle("low-end", settings.preset === "low");
   
   alert("✅ Cambios guardados correctamente");
   closeAdminPanel();
@@ -329,6 +346,11 @@ adminReset.addEventListener("click", () => {
     
     const overlayEl = document.querySelector(".overlay");
     overlayEl.style.opacity = "0.3";
+
+    particleCount = DEFAULT_PARTICLE_COUNT;
+    buildParticles(particleCount);
+
+    document.body.classList.remove("low-end");
     
     loadAdminSettings(); // Recarga los valores en el panel
     alert("✅ Configuración restablecida");
@@ -357,7 +379,12 @@ window.addEventListener("load", () => {
   }
   if(settings.particleCount){
     particleCount = settings.particleCount;
+  }else{
+    particleCount = DEFAULT_PARTICLE_COUNT;
   }
+  buildParticles(particleCount);
+
+  document.body.classList.toggle("low-end", settings.preset === "low");
 });
 
 
@@ -367,27 +394,35 @@ window.addEventListener("load", () => {
 const canvas = document.getElementById("particles");
 const ctx = canvas.getContext("2d");
 
+let dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+
 function resize(){
-  canvas.width = Math.floor(window.innerWidth * devicePixelRatio);
-  canvas.height = Math.floor(window.innerHeight * devicePixelRatio);
+  dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+  canvas.width = Math.floor(window.innerWidth * dpr);
+  canvas.height = Math.floor(window.innerHeight * dpr);
+  buildParticles(particleCount);
 }
 window.addEventListener("resize", resize);
 resize();
 
-const particles = [];
-const COUNT = Math.min(70, Math.floor((window.innerWidth * window.innerHeight) / 14000));
+let particles = [];
 
 function rand(min, max){ return Math.random() * (max - min) + min; }
+function clamp(num, min, max){ return Math.min(max, Math.max(min, num)); }
 
-for(let i=0;i<COUNT;i++){
-  particles.push({
-    x: rand(0, canvas.width),
-    y: rand(0, canvas.height),
-    r: rand(1.2, 2.8) * devicePixelRatio,
-    vx: rand(-0.18, 0.18) * devicePixelRatio,
-    vy: rand(-0.10, 0.10) * devicePixelRatio,
-    a: rand(0.08, 0.22)
-  });
+function buildParticles(count){
+  const finalCount = clamp(count || DEFAULT_PARTICLE_COUNT, 20, 200);
+  particles = [];
+  for(let i=0;i<finalCount;i++){
+    particles.push({
+      x: rand(0, canvas.width),
+      y: rand(0, canvas.height),
+      r: rand(1.1, 2.4) * dpr,
+      vx: rand(-0.14, 0.14) * dpr,
+      vy: rand(-0.08, 0.08) * dpr,
+      a: rand(0.06, 0.18)
+    });
+  }
 }
 
 function tick(){
